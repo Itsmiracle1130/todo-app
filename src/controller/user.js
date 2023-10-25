@@ -64,14 +64,12 @@ const userLogin = async (req, res) => {
 			});
 		}
 		const token = await createToken({ id: existingUser.id, username: existingUser.username});
-		// const user = await models.user.findOne({ username: value.username }).select("-password");
+		const user = await models.user.findOne({ username: value.username }).select("-password");
+		console.log(user);
 		res.cookie("token", token, { httpOnly: true });
-		return res.status(200).render("dashboard");
-        // .json({
-		// 	status: true,
-		// 	message: "Login Successful",
-		// 	data: { token, user }
-		// })
+		return res.status(200).render("dashboard", ({
+			user
+		}));
 	} catch (error) {
 		console.error("Error fetching user Data", error);
 		return res.status(500).send({

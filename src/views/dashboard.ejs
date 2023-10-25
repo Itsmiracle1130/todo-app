@@ -4,10 +4,10 @@
         <title>Your To-Do WebApp</title>
     </head>
     <body>
-        <h1>You're Welcome</h1>
+        <h1>Hi, <%= user.username %></h1>
         <p>Save yourself some time by organizing your plans for the day</p>
         <ul>
-          <li><a href="/api/task/create/">Add a To-Do</a></li>
+          <li><a href="/tasks/create/">Add a To-Do</a></li>
           <li><a href="/tasks">Pending To-Do</a></li>
           <li><a href="/tasks?status=completed">Completed To-Do</a></li>
           <li><a href="/tasks?status=deleted">Deleted To-Do</a></li>

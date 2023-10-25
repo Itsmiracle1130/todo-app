@@ -30,7 +30,7 @@ const verifyToken = async (req, res, next) => {
 				});
 			}
 		}
-
+		// console.log(token);
 		if (!token) {
 			return res.status(403).send({
 				status: false,
@@ -39,7 +39,7 @@ const verifyToken = async (req, res, next) => {
 		}
 
 		const decoded = await validateUserToken(token);
-		const user = await models.User.findById(decoded.id);
+		const user = await models.user.findById(decoded.id);
 
 		if (!user) {
 			return res.status(404).send({

@@ -9,4 +9,16 @@ userRoute.post("/", userReg);
 
 userRoute.post("/login", userLogin);
 
+userRoute.get("/register", (req, res) => {
+	res.render("register");
+});
+  
+userRoute.get("/login", (req, res) => {
+	res.render("login");
+});
+
+userRoute.get("/dashboard", (req, res) => {
+	res.render("dashboard");
+});
+
 module.exports = userRoute;

@@ -6,19 +6,22 @@ const createTask = async(req, res) => {
 
 	try {
 		const user = await models.user.findOne(username);
-		const {error, taskData} = validateTaskInfo(req.body);
+		const {error, value} = validateTaskInfo(req.body);
 		if (error) {
 			res.status(404).send({
 				status: false,
 				message: "Task creation failed"
 			});
 		}
-		const createdTask = await models.Task.create({
-			title: taskData.title,
-			description: taskData.description,
+		const createdTask = await models.task.create({
+			title: value.title,
+			description: value.description,
 			user: user.id
 		});
-		return res.status(201).render("checkTodo");
+		return res.status(201).render("checkOne"), ({
+			task: createdTask,
+			taskId: createdTask.id
+		});
 
 	} catch (error) {
 		console.error("Error creating task");
@@ -34,7 +37,7 @@ const readAllTasks = async(req, res) => {
 	let { page, limit, status } = req.query;
 
 	try {
-		const user = await models.User.findOne({ username });
+		const user = await models.user.findOne({ username });
 		page = page || 1;
 		limit = limit || 10;
 		
@@ -51,7 +54,7 @@ const readAllTasks = async(req, res) => {
 			}
 		}
 
-		const tasks = await models.Task.find(query)
+		const tasks = await models.task.find(query)
 			.limit(endIndex)
 			.skip(startIndex)
 			.exec();
@@ -63,7 +66,7 @@ const readAllTasks = async(req, res) => {
 			});
 		}
 
-		const count = await models.Task.countDocuments(query);
+		const count = await models.task.countDocuments(query);
 		
 		const totalPages = Math.ceil(count / limit);
 		const total = tasks.length;
@@ -93,8 +96,8 @@ const readTask = async (req, res) => {
 	const { taskId } = req.params;
     
 	try {
-		const user = await models.User.findOne({ username });
-		const task = await models.Task.findOne({ _id: taskId, user: user.id });
+		const user = await models.user.findOne({ username });
+		const task = await models.task.findOne({ _id: taskId, user: user.id });
 
 		if (!task) {
 			return res.status(404).json({

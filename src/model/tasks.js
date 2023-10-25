@@ -16,18 +16,11 @@ const taskModel = new Schema({
 		enum: ["pending", "completed", "deleted"],
 		default: "pending"
 	},
-	createdAt: {
-		type: Date,
-		default: Date.now()
-	},
-	updatedAt: {
-		type: Date,
-		default: Date.now()
-	},
 	user: {
 		type: Schema.Types.ObjectId,
 		ref: "User",
 	},
-});
+}, 
+{timestamps: true});
 
-module.exports = mongoose.model("tasks", taskModel);
+module.exports = mongoose.model("task", taskModel);
