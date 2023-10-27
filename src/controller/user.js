@@ -20,17 +20,13 @@ const userReg = async (req, res) => {
 			});
 		}
 		const hashedPassword = await bcrypt.hash(value.password, 10);
-		const createdUser = await models.user.create({
+		await models.user.create({
 			firstName: value.firstName,
 			lastName: value.lastName,
 			username: value.username,
 			password: hashedPassword
 		});
-		return res.status(201).json({
-			status: true,
-			message: "User successfully created",
-			data: createdUser
-		});
+		return res.status(201).render("login");
 	} catch (error) {
 		console.error("Error fetching user data", error);
 		return res.status(500).send({
