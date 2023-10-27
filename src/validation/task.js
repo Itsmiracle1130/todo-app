@@ -13,7 +13,7 @@ const options = {
 const validateTaskInfo = (taskInfo) => {
 	const schema = joi.object({
 		title: joi.string().min(2).max(50).required(),
-		description: joi.string().min(4).max(1000),
+		description: joi.string().min(4).max(1000).required(),
 	});
 	return schema.validate(taskInfo, options);
 };

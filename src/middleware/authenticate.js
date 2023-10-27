@@ -10,7 +10,6 @@ const verifyToken = async (req, res, next) => {
 			const key = req.headers.authorization.split(" ");
 			if (key.length === 2 && /^Bearer$/i.test(key[0])) {
 				token = key[1];
-				console.log("header token", token);
 			} else {
 				return res.status(401).send({
 					status: false,
@@ -30,7 +29,7 @@ const verifyToken = async (req, res, next) => {
 				});
 			}
 		}
-		// console.log(token);
+
 		if (!token) {
 			return res.status(403).send({
 				status: false,

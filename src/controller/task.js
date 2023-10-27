@@ -18,10 +18,10 @@ const createTask = async(req, res) => {
 			description: value.description,
 			user: user.id
 		});
-		return res.status(201).render("checkOne"), ({
+		return res.status(201).render("checkOne", ({
 			task: createdTask,
-			taskId: createdTask.id
-		});
+			taskId: createdTask._id
+		}));
 
 	} catch (error) {
 		console.error("Error creating task");
@@ -32,72 +32,67 @@ const createTask = async(req, res) => {
 	}
 };
 
-const readAllTasks = async(req, res) => {
-	const username = req.user;
+const readAllTasks = async (req, res) => {
+	const { username } = req.user;
 	let { page, limit, status } = req.query;
-
+  
 	try {
 		const user = await models.user.findOne({ username });
 		page = page || 1;
 		limit = limit || 10;
-		
+  
 		const startIndex = (page - 1) * limit;
 		const endIndex = page * limit;
-		
-		let query = { status: "pending", user: user.id };
-
+  
+		let query = { user: user._id };
+  
 		if (status) {
-			if (status === "deleted") {
-				query.status = "deleted";
-			} else if (status === "completed") {
-				query.status = "completed";
+			if (status === "deleted" || status === "completed" || status === "pending") {
+				query.status = status;
+			} else {
+				delete query.status;
 			}
 		}
-
+  
 		const tasks = await models.task.find(query)
 			.limit(endIndex)
 			.skip(startIndex)
 			.exec();
-		
-		if (tasks.length < 1) {
-			return res.status(204).send({
+  
+		if (tasks.length === 0) {
+			return res.status(204).json({
 				status: true,
-				message: "No data"
+				message: "No data",
 			});
 		}
-
+  
 		const count = await models.task.countDocuments(query);
-		
+  
 		const totalPages = Math.ceil(count / limit);
-		const total = tasks.length;
-		
-		return res.status(200).json({
-			status: true,
-			message: "Tasks fetched successfully",
-			data: {
-				total,
-				totalPages,
-				currentPage: page,
-				tasks
-			}
+  
+		return res.status(200).render("checkTodo", {
+			total: tasks.length,
+			totalPages,
+			currentPage: page,
+			tasks,
 		});
-        
+  
 	} catch (error) {
-		console.error("Error reading task");
-		res.status(500).send({
+		console.error("Error reading tasks", error);
+		res.status(500).json({
 			status: false,
-			message: "Internal server error"
+			message: "Internal server error",
 		});
 	}
 };
-
+  
 const readTask = async (req, res) => {
 	const { username } = req.user;
 	const { taskId } = req.params;
     
 	try {
 		const user = await models.user.findOne({ username });
-		const task = await models.task.findOne({ _id: taskId, user: user.id });
+		const task = await models.task.findById(taskId, { user: user._id});
 
 		if (!task) {
 			return res.status(404).json({
@@ -113,13 +108,11 @@ const readTask = async (req, res) => {
 			});
 		}
 
-		return res.status(200).json({
-			status: true,
-			message: "Task located",
-			data: task
-		});
+		return res.status(200).render("checkOne", ({
+			task, taskId
+		}));
 	} catch (error) {
-		console.error("Error reading task");
+		console.error("Error reading task", error);
 		res.status(500).send({
 			status: false,
 			message: "Internal server error"
@@ -132,8 +125,8 @@ const updateTask = async (req, res) => {
 	const { taskId } = req.params;
 
 	try {
-		const user = await models.User.findOne({ username });
-		const task = await models.Task.findOne({ _id: taskId, user: user.id });
+		const user = await models.user.findOne({ username });
+		const task = await models.task.findById(taskId, { user: user._id});
 
 		if (!task) {
 			return res.status(404).send({
@@ -154,15 +147,46 @@ const updateTask = async (req, res) => {
 		if (req.body.description) updateObject.description = req.body.description;
 		if (req.body.status) updateObject.status = req.body.status;
 
-		const updatedTask = await models.Task.findByIdAndUpdate(taskId, updateObject, { new: true });
+		const updatedTask = await models.task.findByIdAndUpdate(taskId, updateObject, { new: true });
 
-		return res.status(200).json({
-			status: true,
-			message: "Task updated",
-			data: updatedTask
-		});
+		return res.status(200).render("checkOne", ({
+			taskId, task: updatedTask
+		}));
 	} catch (error) {
-		console.error("Error updating task");
+		console.error("Error updating task", error);
+		res.status(500).send({
+			status: false,
+			message: "Internal server error"
+		});
+	}
+};
+
+const updateData = async (req, res) => {
+	const { username } = req.user;
+	const { taskId } = req.params;
+	try {
+		const user = await models.user.findOne({ username });
+		const task = await models.task.findById(taskId, { user: user._id});
+
+		if (!task) {
+			return res.status(404).send({
+				status: false,
+				message: "Task not found"
+			});
+		}
+
+		if (task.status === "deleted") {
+			return res.status(204).send({
+				status: true,
+				message: "No data"
+			});
+		}
+
+		return res.status(200).render("update", ({
+			taskId, task
+		}));
+	} catch (error) {
+		console.error("Error updating task", error);
 		res.status(500).send({
 			status: false,
 			message: "Internal server error"
@@ -175,8 +199,8 @@ const deleteTask = async (req, res) => {
 	const { taskId } = req.params;
   
 	try {
-		const user = await models.User.findOne({ username });
-		const task = await models.Task.findOne({ _id: taskId, user: user.id });
+		const user = await models.user.findOne({ username });
+		const task = await models.task.findById(taskId, { user: user._id});
   
 		if (!task) {
 			return res.status(404).send({
@@ -192,14 +216,11 @@ const deleteTask = async (req, res) => {
 			});
 		}
   
-		await models.Task.findByIdAndUpdate(taskId, { status: "deleted" }, { upsert: true });
+		await models.task.findByIdAndUpdate(taskId, { status: "deleted" }, { upsert: true });
   
-		return res.status(204).json({
-			status: true,
-			message: "Task deleted successfully"
-		});
+		return res.status(204).redirect("/tasks");
 	} catch (error) {
-		console.error("Error deleting task");
+		console.error("Error deleting task", error);
 		res.status(500).send({
 			status: false,
 			message: "Internal server error"
@@ -208,5 +229,5 @@ const deleteTask = async (req, res) => {
 };
 
 module.exports = {
-	createTask, readTask, readAllTasks, updateTask, deleteTask
+	createTask, readTask, readAllTasks, updateTask, deleteTask, updateData
 };

@@ -6,29 +6,30 @@
 <body>
   <h1>My To-Do</h1>
 
-  <% if (data.tasks.length > 0) { %>
+  <% if (tasks.length > 0) { %>
     <ul>
-      <% data.tasks.forEach(task => { %>
+      <% tasks.forEach(task => { %>
         <li>
           <strong>Title:</strong> <%= task.title %><br>
+          <strong>Status:</strong> <%= task.status %><br>
           <a href="/tasks/<%= task._id %>">View To-Do</a>
         </li>
       <% }); %>
     </ul>
 
     <div>
-      <strong>Total To-Do:</strong> <%= data.total %><br>
-      <strong>Total Pages:</strong> <%= data.totalPages %><br>
-      <strong>Current Page:</strong> <%= data.currentPage %>
+      <strong>Total To-Do:</strong> <%= total %><br>
+      <strong>Total Pages:</strong> <%= totalPages %><br>
+      <strong>Current Page:</strong> <%= currentPage %>
     </div>
 
     <div>
-      <% if (data.currentPage > 1) { %>
-        <a href="?page=<%= data.currentPage - 1 %>">Previous Page</a>
+      <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>">Previous Page</a>
       <% } %>
 
-      <% if (data.currentPage < data.totalPages) { %>
-        <a href="?page=<%= data.currentPage + 1 %>">Next Page</a>
+      <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>">Next Page</a>
       <% } %>
     </div>
   <% } else { %>

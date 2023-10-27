@@ -1,5 +1,5 @@
 const express = require("express");
-const { createTask, readTask, readAllTasks, updateTask, deleteTask } = require("../controller/task.js");
+const { createTask, readTask, readAllTasks, updateTask, deleteTask, updateData } = require("../controller/task.js");
 
 const router = express.Router();
 
@@ -11,15 +11,12 @@ router.get("/create", (req, res) => {
 	res.render("addTodo");
 });
 
-router.get("/update/:taskId", async (req, res) => {
-	const taskId = req.params.taskId;
-	res.render("update", { taskId }); 
-});
+router.get("/update/:taskId", updateData);
 
 router.get("/:taskId", readTask);
 
-router.patch("/:taskId", updateTask);
+router.post("/update/:taskId", updateTask);
 
-router.delete("/:taskId", deleteTask);
+router.get("/delete/:taskId", deleteTask);
 
 module.exports = router;

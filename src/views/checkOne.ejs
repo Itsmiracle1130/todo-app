@@ -11,7 +11,8 @@
     <p>Description: <%= task.description %></p>
     <p>Status: <%= task.status %></p>
   </div>
-  
   <a href="/tasks">Back to all To-Do</a>
+  <a href="/tasks/update/<%= taskId %>" > Update Task</a>
+  <a href="/tasks/delete/<%= taskId %>" > Delete Task</a>
 </body>
 </html>
