@@ -1,5 +1,5 @@
 const user1 = {
-	username: "altschool",
+	username: "altschoolbe",
 	password: "allowme"
 };
 
@@ -17,6 +17,11 @@ const user4 = {
 	password: "frogvoice"
 };
 
+const user5 = {
+	username: "altschool",
+	password: "allowme"
+};
+
 module.exports = {
-	user1, user2, user3, user4
+	user1, user2, user3, user4, user5
 };

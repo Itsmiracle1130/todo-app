@@ -2,7 +2,7 @@
 const supertest = require("supertest");
 const mongoose = require("mongoose");
 const createServer = require("../utility/server.js");
-const { todo1, todo2, todo3, todo4, todo5 } = require("./testData/task.js");
+const { todo1, todo2, todo3, todo4, todo5 } = require("./test/task.js");
 const { loginAndSetToken } = require("./setup.js");
 
 const request = supertest(createServer());
@@ -75,8 +75,8 @@ describe("todo endpoint", () => {
 		it("should return 200", async() => {
 			const token = await loginAndSetToken();
 			const createResponse = await request.post("/tasks").send(todo3).set("Cookie", `token=${token}`);
-          
-			const todoId = createResponse.body.data._id;
+			console.log(createResponse.body.task);
+			const todoId = createResponse.body.task._id;
           
 			const { status } = await request.get(`/tasks/${todoId}`).set("Cookie", `token=${token}`);
 
@@ -89,7 +89,7 @@ describe("todo endpoint", () => {
 			const token = await loginAndSetToken();
 			const createResponse = await request.post("/tasks").send(todo4).set("Cookie", `token=${token}`);
           
-			const todoId = createResponse.body.data._id;
+			const todoId = createResponse.body.task._id;
 
 			const { status } = await request.patch(`/tasks/${todoId}`).set("Cookie", `token=${token}`);
 
@@ -102,7 +102,7 @@ describe("todo endpoint", () => {
 			const token = await loginAndSetToken();
 			const createResponse = await request.post("/tasks").send(todo5).set("Cookie", `token=${token}`);
           
-			const todoId = createResponse.body.data._id;
+			const todoId = createResponse.body.task._id;
 
 			const { status } = await request.delete(`/tasks/${todoId}`).set("Cookie", `token=${token}`);
 

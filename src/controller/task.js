@@ -8,7 +8,7 @@ const createTask = async(req, res) => {
 		const user = await models.user.findOne(username);
 		const {error, value} = validateTaskInfo(req.body);
 		if (error) {
-			res.status(404).send({
+			res.status(400).json({
 				status: false,
 				message: "Task creation failed"
 			});
@@ -25,7 +25,7 @@ const createTask = async(req, res) => {
 
 	} catch (error) {
 		console.error("Error creating task");
-		res.status(500).send({
+		res.status(500).json({
 			status: false,
 			message: error
 		});
@@ -113,7 +113,7 @@ const readTask = async (req, res) => {
 		}));
 	} catch (error) {
 		console.error("Error reading task", error);
-		res.status(500).send({
+		res.status(500).json({
 			status: false,
 			message: "Internal server error"
 		});
@@ -129,14 +129,14 @@ const updateTask = async (req, res) => {
 		const task = await models.task.findById(taskId, { user: user._id});
 
 		if (!task) {
-			return res.status(404).send({
+			return res.status(404).json({
 				status: false,
 				message: "Task not found"
 			});
 		}
 
 		if (task.status === "deleted") {
-			return res.status(204).send({
+			return res.status(204).json({
 				status: true,
 				message: "No data"
 			});
@@ -154,7 +154,7 @@ const updateTask = async (req, res) => {
 		}));
 	} catch (error) {
 		console.error("Error updating task", error);
-		res.status(500).send({
+		res.status(500).json({
 			status: false,
 			message: "Internal server error"
 		});
@@ -169,14 +169,14 @@ const updateData = async (req, res) => {
 		const task = await models.task.findById(taskId, { user: user._id});
 
 		if (!task) {
-			return res.status(404).send({
+			return res.status(404).json({
 				status: false,
 				message: "Task not found"
 			});
 		}
 
 		if (task.status === "deleted") {
-			return res.status(204).send({
+			return res.status(204).json({
 				status: true,
 				message: "No data"
 			});
@@ -187,7 +187,7 @@ const updateData = async (req, res) => {
 		}));
 	} catch (error) {
 		console.error("Error updating task", error);
-		res.status(500).send({
+		res.status(500).json({
 			status: false,
 			message: "Internal server error"
 		});
@@ -203,14 +203,14 @@ const deleteTask = async (req, res) => {
 		const task = await models.task.findById(taskId, { user: user._id});
   
 		if (!task) {
-			return res.status(404).send({
+			return res.status(404).json({
 				status: false,
 				message: "Task not found"
 			});
 		}
   
 		if (task.status === "deleted") {
-			return res.status(204).send({
+			return res.status(204).json({
 				status: true,
 				message: "No data"
 			});
@@ -221,7 +221,7 @@ const deleteTask = async (req, res) => {
 		return res.status(204).redirect("/tasks");
 	} catch (error) {
 		console.error("Error deleting task", error);
-		res.status(500).send({
+		res.status(500).json({
 			status: false,
 			message: "Internal server error"
 		});

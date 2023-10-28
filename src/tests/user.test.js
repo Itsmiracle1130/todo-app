@@ -2,7 +2,7 @@
 const supertest = require("supertest");
 const mongoose = require("mongoose");
 const createServer = require("../utility/server");
-const { user1, user2, user3, user4 } = require("./testData/user.js");
+const { user1, user2, user3, user4 } = require("./test/user.js");
 
 
 const request = supertest(createServer());
